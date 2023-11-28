@@ -19,7 +19,55 @@ namespace ConsoleGames.Games
 
         public override Score Play(int level = 1)
         {
+            int[] player = new int[2] { 1, 1 };
+            int[] prey = new int[2] { 1, 1};
+            List<int[]> scores = new List<int[]>();
+            List<int[]> path = new List<int[]>();
+            int timer = 60000;
+            Display();
+            while (timer > 0)
+            {
+                MoveHunter();
+                Display();
+                CheckCollision();
+                MovePrey();
+                Display();
+                CheckCollision();
+                CheckPlayerImput();
+                MovePlayer();
+                Display();
+                CheckCollision();
+                timer--;
+            }
             return new Score();
+
+            
         }
+
+        private void CheckPlayerImput()     //view
+        {
+
+        }
+        private void MovePlayer()
+        { 
+
+        }
+        private void MoveHunter()
+        {
+
+        }
+        private void MovePrey()
+        {
+
+        }
+        private void CheckCollision()
+        {
+
+        }
+        private void Display()
+        {
+
+        }
+
     }
 }
