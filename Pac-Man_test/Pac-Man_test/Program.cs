@@ -1,31 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace ConsoleGames.Games
+﻿namespace Pac_Man_test
 {
-    internal class Pac_Man : Game
+    internal class Program
     {
-        public override string Name => "Pac Man";
-        public override string Description => "Gegeben ist eine Zahl zwischen 1 und 100 (inkl. Grenzen).\nErrate diese Zahl.";
-        public override string Rules => "Bewege dich mit W A S D";
-        public override string Credits => "Luca Osti, lucaosti@ksr.ch";
-        public override int Year => 2023;
-        public override bool TheHigherTheBetter => true;
-        public override int LevelMax => 400;
-        public override Score HighScore { get; set; }
-
-        public override Score Play(int level = 1)
+        static void Main(string[] args)
         {
             int[] player = new int[2] { 50, 4 };
             int[] oldplayer = new int[2] { 0, 0 };
-            int[] prey = new int[2] { 1, 1};
+            int[] prey = new int[2] { 1, 1 };
             List<int[]> scores = new List<int[]>();
             List<int[]> path = new List<int[]>();
             int timer = 60000;
             Display(player, oldplayer);
+            Console.SetCursorPosition(player[0], player[1]);
             while (timer > 0)
             {
                 oldplayer[0] = player[0];
@@ -40,18 +26,14 @@ namespace ConsoleGames.Games
                 MovePlayer(player);
                 Display(player, oldplayer);
                 CheckCollision();
-                timer--;
+                //timer--;
                 if (timer == 0)
                 {
                     break;
                 }
             }
-            return new Score();
-
-            
         }
-
-        private void CheckPlayerImput(int[] player)     //view
+         private static void CheckPlayerImput(int[] player)     //view
         {
             char move = Console.ReadKey(true).KeyChar;
             if (move == 'w')
@@ -71,7 +53,7 @@ namespace ConsoleGames.Games
                 player[0] = player[0] + 2;
             }
         }
-        private void MovePlayer(int[] player)
+        private static void MovePlayer(int[] player)
         {
             if (player[0] >= 116)
             {
@@ -91,19 +73,19 @@ namespace ConsoleGames.Games
             }
             Console.SetCursorPosition(player[0], player[1]);
         }
-        private void MoveHunter()
+        private static void MoveHunter()
         {
 
         }
-        private void MovePrey()
+        private static void MovePrey()
         {
 
         }
-        private void CheckCollision()
+        private static void CheckCollision()
         {
 
         }
-        private void Display(int[] player, int[] oldplayer)
+        private static void Display(int[] player, int[] oldplayer)
         {
             Console.BackgroundColor = ConsoleColor.White;
             Console.ForegroundColor = ConsoleColor.White;
@@ -137,6 +119,5 @@ namespace ConsoleGames.Games
             Console.Write("PP");
 
         }
-
     }
 }
