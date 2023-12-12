@@ -26,6 +26,7 @@ namespace ConsoleGames.Games
             List<int[]> path = new List<int[]>();
             int timer = 60000;
             Display(player, oldplayer);
+            GenerateMap();
             while (timer > 0)
             {
                 oldplayer[0] = player[0];
@@ -105,6 +106,18 @@ namespace ConsoleGames.Games
         }
         private void Display(int[] player, int[] oldplayer)
         {
+            Console.SetCursorPosition(oldplayer[0], oldplayer[1]);
+            Console.BackgroundColor = ConsoleColor.Black;
+            Console.ForegroundColor = ConsoleColor.Black;
+            Console.Write("OO");
+            Console.SetCursorPosition(player[0], player[1]);
+            Console.BackgroundColor = ConsoleColor.Red;
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.Write("PP");
+
+        }
+        private void GenerateMap()
+        {
             Console.BackgroundColor = ConsoleColor.White;
             Console.ForegroundColor = ConsoleColor.White;
             for (int i = 1; i < 28; i++)
@@ -127,15 +140,6 @@ namespace ConsoleGames.Games
                 Console.SetCursorPosition(i, 28);
                 Console.Write("--");
             }
-            Console.SetCursorPosition(oldplayer[0], oldplayer[1]);
-            Console.BackgroundColor = ConsoleColor.Black;
-            Console.ForegroundColor = ConsoleColor.Black;
-            Console.Write("OO");
-            Console.SetCursorPosition(player[0], player[1]);
-            Console.BackgroundColor = ConsoleColor.Red;
-            Console.ForegroundColor = ConsoleColor.Red;
-            Console.Write("PP");
-
         }
 
     }
