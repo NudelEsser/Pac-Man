@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace ConsoleGames.Games
@@ -18,42 +20,37 @@ namespace ConsoleGames.Games
         public override Score HighScore { get; set; }
         public override Score Play(int level = 1)
         {
-
-            int[] player = new int[2] { 50, 4 };
+            Stopwatch stopwatch = Stopwatch.StartNew();
+            int[] player = new int[2] { 60, 14 };
             int[] oldplayer = new int[2] { 0, 0 };
             int[] oldprey = new int[2] { 0, 0 };
             int[] prey = new int[2] { 100, 10};
+            int[] hunter = new int[2] { 20, 10 };
+            int[] hunter2 = new int[2] { 20, 20 };
             int score = 0;
-            List<int[]> hunters = new List<int[]> 
-            { 
-                new int[] { 20, 20 },
-            };
-            int timer = 1000000;
-            Display(player, oldplayer, prey, oldprey, hunters, score);
+            if (level > LevelMax) level = LevelMax;
+            Display(player, oldplayer, prey, oldprey, hunter, hunter2, score, level);
             GenerateMap();
-            while (timer > 0)
+            int[] isGameOver = new int[1] { 187 };
+            while (true)
             {
                 oldplayer[0] = player[0];
                 oldplayer[1] = player[1];
                 MoveHunter();
-                Display(player, oldplayer, prey, oldprey, hunters, score);
-                score = CheckCollision(player, prey, oldprey, score);
-                MovePrey();
-                Display(player, oldplayer, prey, oldprey, hunters, score);
-                score = CheckCollision(player, prey, oldprey, score);
+                Display(player, oldplayer, prey, oldprey, hunter, hunter2, score, level);
+                score = CheckCollision(player, prey, oldprey, hunter, hunter2, score, isGameOver, level, stopwatch);
+                MovePrey(prey, oldprey, stopwatch, level);
+                Display(player, oldplayer, prey, oldprey, hunter, hunter2, score, level);
+                score = CheckCollision(player, prey, oldprey, hunter, hunter2, score, isGameOver, level, stopwatch);
                 CheckPlayerImput(player);
                 MovePlayer(player, oldplayer);
-                Display(player, oldplayer, prey, oldprey, hunters, score);
-                score = CheckCollision(player, prey, oldprey, score);
-                timer--;
-                if (timer == 0)
-                {
-                    break;
-                }
+                Display(player, oldplayer, prey, oldprey, hunter, hunter2, score, level);
+                score = CheckCollision(player, prey, oldprey, hunter, hunter2, score, isGameOver, level, stopwatch);
+                if (isGameOver[0] == 0) { break; }
             }
+            Console.BackgroundColor = ConsoleColor.Black;
+            Console.ForegroundColor = ConsoleColor.White;
             return new Score();
-
-            
         }
 
         private void CheckPlayerImput(int[] player)     //view
@@ -94,38 +91,105 @@ namespace ConsoleGames.Games
             {
                 player[1] = player[1] + 1;
             }
+
+            if (player[0] == 60)
+            {
+                if (player[1] >= 19)
+                {
+                    player[0] = oldplayer[0];
+                    player[1] = oldplayer[1];
+                }
+
+                if (player[1] <= 9)
+                {
+                    player[0] = oldplayer[0];
+                    player[1] = oldplayer[1];
+                }
+            }
+
+            if (player[1] == 14)
+            {
+                if (player[0] >= 70) 
+                {
+                    player[0] = oldplayer[0];
+                    player[1] = oldplayer[1];
+                }
+
+                if (player[0] <= 50)
+                {
+                    player[0] = oldplayer[0];
+                    player[1] = oldplayer[1];
+                }
+            }
         }
         private void MoveHunter()
         {
 
         }
-        private void MovePrey()
+        private void MovePrey(int[] prey, int[] oldprey, Stopwatch stopwatch, int level)
         {
-
+            long lastMovement = stopwatch.ElapsedMilliseconds;
+            oldprey[0] = prey[0];
+            oldprey[1] = prey[1];
+            if (lastMovement >= 5000 - level * 500)
+            {
+                Random rand = new Random();
+                prey[1] = rand.Next(2, 28);
+                prey[0] = rand.Next(8, 114);
+                stopwatch.Restart();
+            }
         }
-        private int CheckCollision(int[] player, int[] prey, int[] oldprey, int score)
+        private int CheckCollision(int[] player, int[] prey, int[] oldprey, int[] hunter, int[] hunter2, int score, int[] isGameOver, int level, Stopwatch stopwatch)
         {
+            for (int j = 0; j < level * 2 + 2; j++)
+            {
+                if (hunter[0] + j == player[0]) 
+                {
+                    for (int d = 0; d < level * 2; d++)
+                    {
+                        if (hunter[1] + d == player[1])
+                        {
+                            isGameOver[0] = 0;
+                        }
+                    }
+                }
+            }
+            for (int j = 0; j < level * 2 + 2; j++)
+            {
+                if (hunter2[0] + j == player[0])
+                {
+                    for (int d = 0; d < level * 2; d++)
+                    {
+                        if (hunter2[1] + d == player[1])
+                        {
+                            isGameOver[0] = 0;
+                        }
+                    }
+                }
+            }
             for (int i = -1; i < 2; i++)
             {
-
+               
                 if (prey[0] + i == player[0])
                 {
+                    
                     if (prey[1] == player[1])
                     {
                         oldprey[1] = prey[1];
                         oldprey[0] = prey[0];
                         Random rand = new Random();
-                        prey[1] = rand.Next(2, 27);
+                        prey[1] = rand.Next(2, 28);
                         prey[0] = rand.Next(8, 114);
-
+                        stopwatch.Restart();
                         score++;
                         return score;
                     }
+
                 }
             }
             return score;
         }
-        private void Display(int[] player, int[] oldplayer, int[] prey, int[] oldprey, List<int[]> hunters, int score)
+        private void Display(int[] player, int[] oldplayer, int[] prey, int[] oldprey, int[] hunter, int[] hunter2, int score, int level)
         {
             Console.BackgroundColor = ConsoleColor.Black;
             Console.ForegroundColor = ConsoleColor.White;
@@ -145,10 +209,24 @@ namespace ConsoleGames.Games
             Console.BackgroundColor = ConsoleColor.Yellow;
             Console.ForegroundColor = ConsoleColor.Yellow;
             Console.Write("Pr");
-            for (int i = 0; i < hunters.Count; i++)
-            {
-                Console.SetCursorPosition(1, prey[1]);
-            }
+            Console.BackgroundColor = ConsoleColor.DarkMagenta;
+            Console.ForegroundColor = ConsoleColor.DarkMagenta;
+            int z = 1;
+
+                for (int i = 0; i < level; i++)
+                {
+                    z = z * 100;
+                }
+            Console.SetCursorPosition(hunter[0], hunter[1]);
+            Console.Write("h" + z);
+            Console.SetCursorPosition(hunter[0], hunter[1] + 1);
+            Console.Write("h" + z);
+            Console.SetCursorPosition(hunter2[0], hunter2[1]);
+            Console.Write("h" + z);
+            Console.SetCursorPosition(hunter2[0], hunter2[1] + 1);
+            Console.Write("h" + z);
+            Console.SetCursorPosition(hunter[0], hunter[1]);
+            Console.SetCursorPosition(prey[0], prey[1]);
         }
         private void GenerateMap()
         {
@@ -172,6 +250,28 @@ namespace ConsoleGames.Games
             for (int i = 6; i < 117; i++)
             {
                 Console.SetCursorPosition(i, 28);
+                Console.Write("--");
+            }
+
+            for (int i = 1; i < 10; i++)
+            {
+                Console.SetCursorPosition(60, i);
+                Console.Write("--");
+            }
+            for (int i = 19; i < 28; i++)
+            {
+                Console.SetCursorPosition(60, i);
+                Console.Write("--");
+            }
+
+            for (int i = 70; i < 117; i++)
+            {
+                Console.SetCursorPosition(i, 14);
+                Console.Write("-");
+            }
+            for (int i = 6; i < 51; i++)
+            {
+                Console.SetCursorPosition(i, 14);
                 Console.Write("--");
             }
         }
