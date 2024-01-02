@@ -46,7 +46,23 @@ namespace ConsoleGames.Games
                 MovePlayer(player, oldplayer);
                 Display(player, oldplayer, prey, oldprey, hunter, hunter2, score, level);
                 score = CheckCollision(player, prey, oldprey, hunter, hunter2, score, isGameOver, level, stopwatch);
-                if (isGameOver[0] == 0) { break; }
+                if (isGameOver[0] == 0) 
+                {
+                    int answer = quitOrRestart();
+                    if (answer == 0)
+                    {
+                        break;
+                    }
+                    if (answer == 1)
+                    {
+                        isGameOver[0] = 187;
+                        player[0] = 60;
+                        player[1] = 14;
+                        Console.Clear();
+                        GenerateMap();
+                        score = 0;
+                    }
+                }
             }
             Console.BackgroundColor = ConsoleColor.Black;
             Console.ForegroundColor = ConsoleColor.White;
@@ -134,8 +150,27 @@ namespace ConsoleGames.Games
             if (lastMovement >= 5000 - level * 500)
             {
                 Random rand = new Random();
-                prey[1] = rand.Next(2, 28);
-                prey[0] = rand.Next(8, 114);
+                int p = rand.Next(0, 3);
+                if (p == 1)
+                {
+                    prey[1] = rand.Next(2, 13);
+                    prey[0] = rand.Next(8, 58);
+                }
+                if (p == 2)
+                {
+                    prey[1] = rand.Next(15, 28);
+                    prey[0] = rand.Next(8, 58);
+                }
+                if (p == 3)
+                {
+                    prey[1] = rand.Next(2, 13);
+                    prey[0] = rand.Next(62, 114);
+                }
+                if (p == 0)
+                {
+                    prey[1] = rand.Next(15, 28);
+                    prey[0] = rand.Next(62, 114);
+                }
                 stopwatch.Restart();
             }
         }
@@ -178,8 +213,28 @@ namespace ConsoleGames.Games
                         oldprey[1] = prey[1];
                         oldprey[0] = prey[0];
                         Random rand = new Random();
-                        prey[1] = rand.Next(2, 28);
-                        prey[0] = rand.Next(8, 114);
+                        int p = rand.Next(0, 3);
+                        if ( p == 1)
+                        {
+                            prey[1] = rand.Next(2, 13);
+                            prey[0] = rand.Next(8, 58);
+                        }
+                        if (p == 2)
+                        {
+                            prey[1] = rand.Next(15, 28);
+                            prey[0] = rand.Next(8, 58);
+                        }
+                        if (p == 3)
+                        {
+                            prey[1] = rand.Next(2, 13);
+                            prey[0] = rand.Next(62, 114);
+                        }
+                        if (p == 0)
+                        {
+                            prey[1] = rand.Next(15, 28);
+                            prey[0] = rand.Next(62, 114);
+                        }
+
                         stopwatch.Restart();
                         score++;
                         return score;
@@ -188,6 +243,28 @@ namespace ConsoleGames.Games
                 }
             }
             return score;
+        }
+        private int quitOrRestart()
+        {
+            Console.Clear();
+            Console.SetCursorPosition(0, 0);
+            Console.BackgroundColor = ConsoleColor.Black;
+            Console.ForegroundColor = ConsoleColor.White;
+            Console.WriteLine("Game over! Quit or restart? (q/r)");
+            while (true)
+            {
+                char reply = Console.ReadKey(true).KeyChar;
+                if (reply == 'q') 
+                {
+                    return 0;
+                }
+                if (reply == 'r')
+                {
+                    return 1;
+                }
+                Console.Clear ();
+                Console.WriteLine("please reply with 'q' to quit or 'r' to restart. ");
+            }
         }
         private void Display(int[] player, int[] oldplayer, int[] prey, int[] oldprey, int[] hunter, int[] hunter2, int score, int level)
         {
@@ -227,6 +304,9 @@ namespace ConsoleGames.Games
             Console.Write("h" + z);
             Console.SetCursorPosition(hunter[0], hunter[1]);
             Console.SetCursorPosition(prey[0], prey[1]);
+
+            Console.BackgroundColor = ConsoleColor.Black;
+            Console.ForegroundColor = ConsoleColor.White;
         }
         private void GenerateMap()
         {
