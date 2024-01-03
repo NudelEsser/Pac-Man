@@ -16,10 +16,13 @@ namespace ConsoleGames.Games
         public override string Credits => "Luca Osti, lucaosti@ksr.ch";
         public override int Year => 2023;
         public override bool TheHigherTheBetter => true;
-        public override int LevelMax => 8;
+        public override int LevelMax => 3;
         public override Score HighScore { get; set; }
         public override Score Play(int level = 1)
         {
+            Score TrueScore = new Score();
+            TrueScore.Level = level;
+            Console.CursorVisible = false;
             Stopwatch stopwatch = Stopwatch.StartNew();
             int[] player = new int[2] { 60, 14 };
             int[] oldplayer = new int[2] { 0, 0 };
@@ -55,6 +58,7 @@ namespace ConsoleGames.Games
                     }
                     if (answer == 1)
                     {
+ 
                         isGameOver[0] = 187;
                         player[0] = 60;
                         player[1] = 14;
@@ -66,27 +70,35 @@ namespace ConsoleGames.Games
             }
             Console.BackgroundColor = ConsoleColor.Black;
             Console.ForegroundColor = ConsoleColor.White;
-            return new Score();
+            TrueScore.Points = score;
+            if (score >= 50)
+            {
+                TrueScore.LevelCompleted = true;
+            }
+            return TrueScore;
         }
 
         private void CheckPlayerImput(int[] player)     //view
         {
-            char move = Console.ReadKey(true).KeyChar;
-            if (move == 'w')
+            if (Console.KeyAvailable)
             {
-                player[1] = player[1] - 1;
-            }
-            if (move == 'a')
-            {
-                player[0] = player[0] - 2;
-            }
-            if (move == 's')
-            {
-                player[1] = player[1] + 1;
-            }
-            if (move == 'd')
-            {
-                player[0] = player[0] + 2;
+                char move = Console.ReadKey(true).KeyChar;
+                if (move == 'w')
+                {
+                    player[1] = player[1] - 1;
+                }
+                if (move == 'a')
+                {
+                    player[0] = player[0] - 2;
+                }
+                if (move == 's')
+                {
+                    player[1] = player[1] + 1;
+                }
+                if (move == 'd')
+                {
+                    player[0] = player[0] + 2;
+                }
             }
         }
         private void MovePlayer(int[] player, int[] oldplayer)
@@ -180,7 +192,7 @@ namespace ConsoleGames.Games
             {
                 if (hunter[0] + j == player[0]) 
                 {
-                    for (int d = 0; d < level * 2; d++)
+                    for (int d = 0; d < level + 1; d++)
                     {
                         if (hunter[1] + d == player[1])
                         {
@@ -193,7 +205,7 @@ namespace ConsoleGames.Games
             {
                 if (hunter2[0] + j == player[0])
                 {
-                    for (int d = 0; d < level * 2; d++)
+                    for (int d = 0; d < level + 1; d++)
                     {
                         if (hunter2[1] + d == player[1])
                         {
@@ -263,6 +275,7 @@ namespace ConsoleGames.Games
                     return 1;
                 }
                 Console.Clear ();
+                Console.WriteLine("Game over! Quit or restart? (q/r)");
                 Console.WriteLine("please reply with 'q' to quit or 'r' to restart. ");
             }
         }
@@ -272,12 +285,28 @@ namespace ConsoleGames.Games
             Console.ForegroundColor = ConsoleColor.White;
             Console.SetCursorPosition(0, 0);
             Console.Write("  Score: " + score);
-            Console.SetCursorPosition(oldplayer[0], oldplayer[1]);
             Console.BackgroundColor = ConsoleColor.Black;
             Console.ForegroundColor = ConsoleColor.Black;
-            Console.Write("OO");
-            Console.SetCursorPosition(oldprey[0], oldprey[1]);
-            Console.Write("OO");
+            if (player[1] != oldplayer[1])
+            {
+                Console.SetCursorPosition(oldplayer[0], oldplayer[1]);
+                Console.Write("OO");
+            }
+            if (player[0] != oldplayer[0])
+            {
+                Console.SetCursorPosition(oldplayer[0], oldplayer[1]);
+                Console.Write("OO");
+            }
+            if (prey[1] != oldprey[1])
+            {
+                Console.SetCursorPosition(oldprey[0], oldprey[1]);
+                Console.Write("OO");
+            }
+            if (prey[0] != oldprey[0])
+            {
+                Console.SetCursorPosition(oldprey[0], oldprey[1]);
+                Console.Write("OO");
+            }
             Console.SetCursorPosition(player[0], player[1]);
             Console.BackgroundColor = ConsoleColor.Red;
             Console.ForegroundColor = ConsoleColor.Red;
@@ -294,17 +323,16 @@ namespace ConsoleGames.Games
                 {
                     z = z * 100;
                 }
-            Console.SetCursorPosition(hunter[0], hunter[1]);
-            Console.Write("h" + z);
-            Console.SetCursorPosition(hunter[0], hunter[1] + 1);
-            Console.Write("h" + z);
-            Console.SetCursorPosition(hunter2[0], hunter2[1]);
-            Console.Write("h" + z);
-            Console.SetCursorPosition(hunter2[0], hunter2[1] + 1);
-            Console.Write("h" + z);
-            Console.SetCursorPosition(hunter[0], hunter[1]);
-            Console.SetCursorPosition(prey[0], prey[1]);
-
+            for (int i = 0; i < level + 1; i++)
+            {
+                Console.SetCursorPosition(hunter[0], hunter[1] + i );
+                Console.Write("h" + z);
+            }
+            for (int i = 0; i < level + 1; i++)
+            {
+                Console.SetCursorPosition(hunter2[0], hunter2[1] + i);
+                Console.Write("h" + z);
+            }
             Console.BackgroundColor = ConsoleColor.Black;
             Console.ForegroundColor = ConsoleColor.White;
         }
