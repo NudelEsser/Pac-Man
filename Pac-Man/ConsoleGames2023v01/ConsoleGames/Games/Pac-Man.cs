@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Reflection.Emit;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -24,6 +25,7 @@ namespace ConsoleGames.Games
             TrueScore.Level = level;
             Console.CursorVisible = false;
             Stopwatch stopwatch = Stopwatch.StartNew();
+            Stopwatch hunterwatch = Stopwatch.StartNew();
             int[] player = new int[2] { 60, 14 };
             int[] oldplayer = new int[2] { 0, 0 };
             int[] oldprey = new int[2] { 0, 0 };
@@ -32,24 +34,35 @@ namespace ConsoleGames.Games
             int[] hunter2 = new int[2] { 20, 19 };
             int[] hunter3 = new int[2] { 100, 6 };
             int[] hunter4 = new int[2] { 100, 19 };
+            int[] oldhunter = new int[] { 10, 4 };
+            int[] oldhunter2 = new int[] { 10, 4 };
+            int[] oldhunter3 = new int[] { 10, 4 };
+            int[] oldhunter4 = new int[] { 10, 4 };
+            if (level == 2)
+            {
+                hunter[1] = 5;
+                hunter2[1] = 18;
+                hunter3[1] = 5;
+                hunter4[1] = 18;
+            }
             int score = 0;
             if (level > LevelMax) level = LevelMax;
-            Display(player, oldplayer, prey, oldprey, hunter, hunter2, score, level, hunter3, hunter4);
-            GenerateMap();
+            Display(player, oldplayer, prey, oldprey, hunter, hunter2, score, level, hunter3, hunter4, oldhunter, oldhunter2, oldhunter3, oldhunter4);
+            GenerateMap(level);
             int[] isGameOver = new int[1] { 187 };
             while (true)
             {
                 oldplayer[0] = player[0];
                 oldplayer[1] = player[1];
-                MoveHunter();
-                Display(player, oldplayer, prey, oldprey, hunter, hunter2, score, level, hunter3, hunter4);
+                MoveHunter(player, hunter, hunter2, hunter3, hunter4, level, hunterwatch, oldhunter, oldhunter2, oldhunter3, oldhunter4);
+                Display(player, oldplayer, prey, oldprey, hunter, hunter2, score, level, hunter3, hunter4, oldhunter, oldhunter2, oldhunter3, oldhunter4);
                 score = CheckCollision(player, prey, oldprey, hunter, hunter2, score, isGameOver, level, stopwatch, hunter3, hunter4);
                 MovePrey(prey, oldprey, stopwatch, level);
-                Display(player, oldplayer, prey, oldprey, hunter, hunter2, score, level, hunter3, hunter4);
+                Display(player, oldplayer, prey, oldprey, hunter, hunter2, score, level, hunter3, hunter4, oldhunter, oldhunter2, oldhunter3, oldhunter4);
                 score = CheckCollision(player, prey, oldprey, hunter, hunter2, score, isGameOver, level, stopwatch, hunter3, hunter4);
                 CheckPlayerImput(player);
-                MovePlayer(player, oldplayer);
-                Display(player, oldplayer, prey, oldprey, hunter, hunter2, score, level, hunter3, hunter4);
+                MovePlayer(player, oldplayer, level);
+                Display(player, oldplayer, prey, oldprey, hunter, hunter2, score, level, hunter3, hunter4, oldhunter, oldhunter2, oldhunter3, oldhunter4);
                 score = CheckCollision(player, prey, oldprey, hunter, hunter2, score, isGameOver, level, stopwatch, hunter3, hunter4);
                 if (isGameOver[0] == 0) 
                 {
@@ -60,12 +73,22 @@ namespace ConsoleGames.Games
                     }
                     if (answer == 1)
                     {
- 
+                        hunter = new int[2] { 20, 6 };
+                        hunter2 = new int[2] { 20, 19 };
+                        hunter3 = new int[2] { 100, 6 };
+                        hunter4 = new int[2] { 100, 19 };
+                        if (level == 2)
+                        {
+                            hunter[1] = 5;
+                            hunter2[1] = 18;
+                            hunter3[1] = 5;
+                            hunter4[1] = 18;
+                        }
                         isGameOver[0] = 187;
                         player[0] = 60;
                         player[1] = 14;
                         Console.Clear();
-                        GenerateMap();
+                        GenerateMap(level);
                         score = 0;
                     }
                 }
@@ -103,17 +126,27 @@ namespace ConsoleGames.Games
                 }
             }
         }
-        private void MovePlayer(int[] player, int[] oldplayer)
+        private void MovePlayer(int[] player, int[] oldplayer, int level)
         {
-            if (player[0] >= 116)
+            int special = 0;
+            if (level == 2)
+            {
+                special = 2;
+            }
+            int special2 = 0;
+            if (level == 3)
+            {
+                special2 = 4;
+            }
+            if (player[0] >= 116 + special)
             {
                 player[0] = player[0] - 2;
             }
-            if (player[0] <= 6)
+            if (player[0] <= 6 - special2)
             {
                 player[0] = player[0] + 2;
             }
-            if (player[1] >= 28)
+            if (player[1] >= 27)
             {
                 player[1] = player[1] - 1;
             }
@@ -122,7 +155,7 @@ namespace ConsoleGames.Games
                 player[1] = player[1] + 1;
             }
 
-            if (player[0] == 60)
+            if (player[0] == 60 + special)
             {
                 if (player[1] >= 19)
                 {
@@ -139,7 +172,7 @@ namespace ConsoleGames.Games
 
             if (player[1] == 14)
             {
-                if (player[0] >= 70) 
+                if (player[0] >= 70 + special) 
                 {
                     player[0] = oldplayer[0];
                     player[1] = oldplayer[1];
@@ -152,9 +185,199 @@ namespace ConsoleGames.Games
                 }
             }
         }
-        private void MoveHunter()
+        private void MoveHunter(int[] player, int[] hunter, int[] hunter2, int[] hunter3, int[] hunter4, int level, Stopwatch hunterwatch, int[] oldhunter, int[] oldhunter2, int[] oldhunter3, int[] oldhunter4)
         {
+            int special = 0;
+            if (level == 2)
+            {
+                special = 2;
+            }
+            long lastMovement = hunterwatch.ElapsedMilliseconds;
+            Random rand = new Random();
+            int move = 0;
+            if (lastMovement >= 250 + level * 100)
+            {
+                hunterwatch.Restart();
+                if (player[1] <= 13)
+                {
+                    if (player[0] <= 58 + special)
+                    {
+                        oldhunter[0] = hunter[0];
+                        oldhunter[1] = hunter[1];
+                        move = rand.Next(0, 2);
+                        if (move == 0)
+                        {
+                            if (hunter[0] > player[0])
+                            {
+                                hunter[0] = hunter[0] - 2 - level * 2;
+                            }
+                            else if (hunter[0] < player[0] - level * 2)
+                            {
+                                hunter[0] = hunter[0] + 2 + level * 2;
+                            }
+                            else
+                            {
+                                move = 1;
+                            }
+                        }
+                        if (move == 1)
+                        {
+                            if (hunter[1] > player[1])
+                            {
+                                hunter[1] = hunter[1] - 1 - level;
+                            }
+                            else if (hunter[1] < player[1] - level)
+                            {
+                                hunter[1] = hunter[1] + 1 + level;
+                            }
+                            else
+                            {
+                                if (hunter[0] > player[0])
+                                {
+                                    hunter[0] = hunter[0] - 2 - level * 2;
+                                }
+                                else if (hunter[0] < player[0] - level * 2)
+                                {
+                                    hunter[0] = hunter[0] + 2 + level * 2;
+                                }
+                            }
+                        }
+                    }
+                    if (player[0] >= 62 + special)
+                    {
+                        oldhunter3[0] = hunter3[0];
+                        oldhunter3[1] = hunter3[1];
+                        move = rand.Next(0, 2);
+                        if (move == 0)
+                        {
+                            if (hunter3[0] > player[0])
+                            {
+                                hunter3[0] = hunter3[0] - 2 - level * 2;
+                            }
+                            else if (hunter3[0] < player[0] - level * 2)
+                            {
+                                hunter3[0] = hunter3[0] + 2 + level * 2;
+                            }
+                            else
+                            {
+                                move = 1;
+                            }
+                        }
+                        if (move == 1)
+                        {
+                            if (hunter3[1] > player[1])
+                            {
+                                hunter3[1] = hunter3[1] - 1 - level;
+                            }
+                            else if (hunter3[1] < player[1] - level)
+                            {
+                                hunter3[1] = hunter3[1] + 1 + level;
+                            }
+                            else
+                            {
+                                if (hunter3[0] > player[0])
+                                {
+                                    hunter3[0] = hunter3[0] - 2 - level * 2;
+                                }
+                                else if (hunter3[0] < player[0] - level * 2)
+                                {
+                                    hunter3[0] = hunter3[0] + 2 + level * 2;
+                                }
+                            }
+                        }
+                    }
 
+                }
+                if (player[1] >= 15)
+                {
+                    if (player[0] <= 58 + special)
+                    {
+                        oldhunter2[0] = hunter2[0];
+                        oldhunter2[1] = hunter2[1];
+                        move = rand.Next(0, 2);
+                        if (move == 0)
+                        {
+                            if (hunter2[0] > player[0])
+                            {
+                                hunter2[0] = hunter2[0] - 2 - level * 2;
+                            }
+                            else if (hunter2[0] < player[0] - level * 2)
+                            {
+                                hunter2[0] = hunter2[0] + 2 + level * 2;
+                            }
+                            else
+                            {
+                                move = 1;
+                            }
+                        }
+                        if (move == 1)
+                        {
+                            if (hunter2[1] > player[1])
+                            {
+                                hunter2[1] = hunter2[1] - 1 - level;
+                            }
+                            else if (hunter2[1] < player[1] - level)
+                            {
+                                hunter2[1] = hunter2[1] + 1 + level;
+                            }
+                            else
+                            {
+                                if (hunter2[0] > player[0])
+                                {
+                                    hunter2[0] = hunter2[0] - 2 - level * 2;
+                                }
+                                else if (hunter2[0] < player[0] - level * 2)
+                                {
+                                    hunter2[0] = hunter2[0] + 2 + level * 2;
+                                }
+                            }
+                        }
+                    }
+                    if (player[0] >= 62 + special)
+                    {
+                        oldhunter4[0] = hunter4[0];
+                        oldhunter4[1] = hunter4[1];
+                        move = rand.Next(0, 2);
+                        if (move == 0)
+                        {
+                            if (hunter4[0] > player[0])
+                            {
+                                hunter4[0] = hunter4[0] - 2 - level * 2;
+                            }
+                            else if (hunter4[0] < player[0] - level * 2)
+                            {
+                                hunter4[0] = hunter4[0] + 2 + level * 2;
+                            }
+                            else
+                            {
+                                move = 1;
+                            }
+                        }
+                        if (move == 1)
+                        {
+                            if (hunter4[1] > player[1])
+                            {
+                                hunter4[1] = hunter4[1] - 1 - level;
+                            }
+                            else if (hunter4[1] < player[1] - level)
+                            {
+                                hunter4[1] = hunter4[1] + 1 + level;
+                            }
+                            else
+                            {
+                                if (hunter4[0] > player[0])
+                                {
+                                    hunter4[0] = hunter4[0] - 2 - level * 2;
+                                }
+                                else if (hunter4[0] < player[0] - level * 2)
+                                {
+                                    hunter4[0] = hunter4[0] + 2 + level * 2;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
         private void MovePrey(int[] prey, int[] oldprey, Stopwatch stopwatch, int level)
         {
@@ -172,7 +395,7 @@ namespace ConsoleGames.Games
                 }
                 if (p == 2)
                 {
-                    prey[1] = rand.Next(15, 28);
+                    prey[1] = rand.Next(15, 27);
                     prey[0] = rand.Next(8, 58);
                 }
                 if (p == 3)
@@ -182,7 +405,7 @@ namespace ConsoleGames.Games
                 }
                 if (p == 0)
                 {
-                    prey[1] = rand.Next(15, 28);
+                    prey[1] = rand.Next(15, 27);
                     prey[0] = rand.Next(62, 114);
                 }
                 stopwatch.Restart();
@@ -261,7 +484,7 @@ namespace ConsoleGames.Games
                         }
                         if (p == 2)
                         {
-                            prey[1] = rand.Next(15, 28);
+                            prey[1] = rand.Next(15, 27);
                             prey[0] = rand.Next(8, 58);
                         }
                         if (p == 3)
@@ -271,7 +494,7 @@ namespace ConsoleGames.Games
                         }
                         if (p == 0)
                         {
-                            prey[1] = rand.Next(15, 28);
+                            prey[1] = rand.Next(15, 27);
                             prey[0] = rand.Next(62, 114);
                         }
 
@@ -307,12 +530,12 @@ namespace ConsoleGames.Games
                 Console.WriteLine("please reply with 'q' to quit or 'r' to restart. ");
             }
         }
-        private void Display(int[] player, int[] oldplayer, int[] prey, int[] oldprey, int[] hunter, int[] hunter2, int score, int level, int[] hunter3, int[] hunter4)
+        private void Display(int[] player, int[] oldplayer, int[] prey, int[] oldprey, int[] hunter, int[] hunter2, int score, int level, int[] hunter3, int[] hunter4, int[] oldhunter, int[] oldhunter2, int[] oldhunter3, int[] oldhunter4)
         {
             Console.BackgroundColor = ConsoleColor.Black;
             Console.ForegroundColor = ConsoleColor.White;
             Console.SetCursorPosition(0, 0);
-            Console.Write("  Score: " + score);
+            Console.Write("  Score: " + score + " " + player[0] + " " + player[1]);
             Console.BackgroundColor = ConsoleColor.Black;
             Console.ForegroundColor = ConsoleColor.Black;
             if (player[1] != oldplayer[1])
@@ -335,6 +558,76 @@ namespace ConsoleGames.Games
                 Console.SetCursorPosition(oldprey[0], oldprey[1]);
                 Console.Write("OO");
             }
+
+            int z = 1;
+            for (int i = 0; i < level; i++)
+            {
+                z = z * 100;
+            }
+            if (hunter[0] != oldhunter[0])
+            {
+                for (int i = 0; i < level + 1; i++)
+                {
+                    Console.SetCursorPosition(oldhunter[0], oldhunter[1] + i);
+                    Console.Write("0" + z);
+                }
+            }
+            if (hunter[1] != oldhunter[1])
+            {
+                for (int i = 0; i < level + 1; i++)
+                {
+                    Console.SetCursorPosition(oldhunter[0], oldhunter[1] + i);
+                    Console.Write("0" + z);
+                }
+            }
+            if (hunter2[0] != oldhunter2[0])
+            {
+                for (int i = 0; i < level + 1; i++)
+                {
+                    Console.SetCursorPosition(oldhunter2[0], oldhunter2[1] + i);
+                    Console.Write("0" + z);
+                }
+            }
+            if (hunter2[1] != oldhunter2[1])
+            {
+                for (int i = 0; i < level + 1; i++)
+                {
+                    Console.SetCursorPosition(oldhunter2[0], oldhunter2[1] + i);
+                    Console.Write("0" + z);
+                }
+            }
+            if (hunter3[0] != oldhunter3[0])
+            {
+                for (int i = 0; i < level + 1; i++)
+                {
+                    Console.SetCursorPosition(oldhunter3[0], oldhunter3[1] + i);
+                    Console.Write("0" + z);
+                }
+            }
+            if (hunter3[1] != oldhunter3[1])
+            {
+                for (int i = 0; i < level + 1; i++)
+                {
+                    Console.SetCursorPosition(oldhunter3[0], oldhunter3[1] + i);
+                    Console.Write("0" + z);
+                }
+            }
+            if (hunter4[0] != oldhunter4[0])
+            {
+                for (int i = 0; i < level + 1; i++)
+                {
+                    Console.SetCursorPosition(oldhunter4[0], oldhunter4[1] + i);
+                    Console.Write("0" + z);
+                }
+            }
+            if (hunter4[1] != oldhunter4[1])
+            {
+                for (int i = 0; i < level + 1; i++)
+                {
+                    Console.SetCursorPosition(oldhunter4[0], oldhunter4[1] + i);
+                    Console.Write("0" + z);
+                }
+            }
             Console.SetCursorPosition(player[0], player[1]);
             Console.BackgroundColor = ConsoleColor.Red;
             Console.ForegroundColor = ConsoleColor.Red;
@@ -343,14 +636,9 @@ namespace ConsoleGames.Games
             Console.BackgroundColor = ConsoleColor.Yellow;
             Console.ForegroundColor = ConsoleColor.Yellow;
             Console.Write("Pr");
+
             Console.BackgroundColor = ConsoleColor.DarkMagenta;
             Console.ForegroundColor = ConsoleColor.DarkMagenta;
-            int z = 1;
-
-                for (int i = 0; i < level; i++)
-                {
-                    z = z * 100;
-                }
             for (int i = 0; i < level + 1; i++)
             {
                 Console.SetCursorPosition(hunter[0], hunter[1] + i );
@@ -374,48 +662,58 @@ namespace ConsoleGames.Games
             Console.BackgroundColor = ConsoleColor.Black;
             Console.ForegroundColor = ConsoleColor.White;
         }
-        private void GenerateMap()
+        private void GenerateMap(int level)
         {
+            int special = 0;
+            if (level == 2)
+            {
+                special = 2;
+            }
+            int special2 = 0;
+            if (level == 3)
+            {
+                special2 = 4;
+            }
             Console.BackgroundColor = ConsoleColor.White;
             Console.ForegroundColor = ConsoleColor.White;
             for (int i = 1; i < 28; i++)
             {
-                Console.SetCursorPosition(6, i);
+                Console.SetCursorPosition(6 - special2, i);
                 Console.Write("--");
             }
             for (int i = 1; i < 28; i++)
             {
-                Console.SetCursorPosition(116, i);
+                Console.SetCursorPosition(116 + special, i);
                 Console.Write("--");
             }
-            for (int i = 6; i < 117; i++)
+            for (int i = 6 - special2; i < 117; i++)
             {
                 Console.SetCursorPosition(i, 1);
-                Console.Write("-");
+                Console.Write("--");
             }
-            for (int i = 6; i < 117; i++)
+            for (int i = 6 - special2; i < 117; i++)
             {
-                Console.SetCursorPosition(i, 28);
+                Console.SetCursorPosition(i, 27);
                 Console.Write("--");
             }
 
             for (int i = 1; i < 10; i++)
             {
-                Console.SetCursorPosition(60, i);
+                Console.SetCursorPosition(60 + special, i);
                 Console.Write("--");
             }
             for (int i = 19; i < 28; i++)
             {
-                Console.SetCursorPosition(60, i);
+                Console.SetCursorPosition(60 + special, i);
                 Console.Write("--");
             }
 
-            for (int i = 70; i < 117; i++)
+            for (int i = 70 + special; i < 117; i++)
             {
                 Console.SetCursorPosition(i, 14);
-                Console.Write("-");
+                Console.Write("--");
             }
-            for (int i = 6; i < 51; i++)
+            for (int i = 6 - special2; i < 51; i++)
             {
                 Console.SetCursorPosition(i, 14);
                 Console.Write("--");
