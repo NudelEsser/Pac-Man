@@ -12,7 +12,7 @@ namespace ConsoleGames.Games
     internal class Pac_Man : Game
     {
         public override string Name => "Pac Man";
-        public override string Description => "Gegeben ist eine Zahl zwischen 1 und 100 (inkl. Grenzen).\nErrate diese Zahl.";
+        public override string Description => "Sammle das magische Gold ein und weiche den Jägern der Nacht aus. Du benötigst 20 Gold um das nächste Level zu betreten.";
         public override string Rules => "Bewege dich mit W A S D";
         public override string Credits => "Luca Osti, lucaosti@ksr.ch";
         public override int Year => 2023;
@@ -34,10 +34,10 @@ namespace ConsoleGames.Games
             int[] hunter2 = new int[2] { 20, 19 };
             int[] hunter3 = new int[2] { 100, 6 };
             int[] hunter4 = new int[2] { 100, 19 };
-            int[] oldhunter = new int[] { 10, 4 };
-            int[] oldhunter2 = new int[] { 10, 4 };
-            int[] oldhunter3 = new int[] { 10, 4 };
-            int[] oldhunter4 = new int[] { 10, 4 };
+            int[] oldhunter = new int[] { 108, 23 };
+            int[] oldhunter2 = new int[] { 108, 23 };
+            int[] oldhunter3 = new int[] { 108, 23 };
+            int[] oldhunter4 = new int[] { 108, 23 };
             if (level == 2)
             {
                 hunter[1] = 5;
@@ -96,7 +96,7 @@ namespace ConsoleGames.Games
             Console.BackgroundColor = ConsoleColor.Black;
             Console.ForegroundColor = ConsoleColor.White;
             TrueScore.Points = score;
-            if (score >= 50)
+            if (score >= 20)
             {
                 TrueScore.LevelCompleted = true;
             }
@@ -535,7 +535,7 @@ namespace ConsoleGames.Games
             Console.BackgroundColor = ConsoleColor.Black;
             Console.ForegroundColor = ConsoleColor.White;
             Console.SetCursorPosition(0, 0);
-            Console.Write("  Score: " + score + " " + player[0] + " " + player[1]);
+            Console.Write("  Gold: " + score);
             Console.BackgroundColor = ConsoleColor.Black;
             Console.ForegroundColor = ConsoleColor.Black;
             if (player[1] != oldplayer[1])
