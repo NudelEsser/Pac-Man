@@ -195,7 +195,7 @@ namespace ConsoleGames.Games
             long lastMovement = hunterwatch.ElapsedMilliseconds;
             Random rand = new Random();
             int move = 0;
-            if (lastMovement >= 250 + level * 100)
+            if (lastMovement >= 200 + level * 120)
             {
                 hunterwatch.Restart();
                 if (player[1] <= 13)
