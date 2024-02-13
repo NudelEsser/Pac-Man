@@ -194,97 +194,18 @@ namespace ConsoleGames.Games
             }
             long lastMovement = hunterwatch.ElapsedMilliseconds;
             Random rand = new Random();
-            int move = 0;
-            if (lastMovement >= 200 + level * 120)
+            if (lastMovement >= 200 + level * 150)
             {
                 hunterwatch.Restart();
                 if (player[1] <= 13)
                 {
                     if (player[0] <= 58 + special)
                     {
-                        oldhunter[0] = hunter[0];
-                        oldhunter[1] = hunter[1];
-                        move = rand.Next(0, 2);
-                        if (move == 0)
-                        {
-                            if (hunter[0] > player[0])
-                            {
-                                hunter[0] = hunter[0] - 2 - level * 2;
-                            }
-                            else if (hunter[0] < player[0] - level * 2)
-                            {
-                                hunter[0] = hunter[0] + 2 + level * 2;
-                            }
-                            else
-                            {
-                                move = 1;
-                            }
-                        }
-                        if (move == 1)
-                        {
-                            if (hunter[1] > player[1])
-                            {
-                                hunter[1] = hunter[1] - 1 - level;
-                            }
-                            else if (hunter[1] < player[1] - level)
-                            {
-                                hunter[1] = hunter[1] + 1 + level;
-                            }
-                            else
-                            {
-                                if (hunter[0] > player[0])
-                                {
-                                    hunter[0] = hunter[0] - 2 - level * 2;
-                                }
-                                else if (hunter[0] < player[0] - level * 2)
-                                {
-                                    hunter[0] = hunter[0] + 2 + level * 2;
-                                }
-                            }
-                        }
+                        MoveSeperateHunter(hunter, level, player, oldhunter);
                     }
                     if (player[0] >= 62 + special)
                     {
-                        oldhunter3[0] = hunter3[0];
-                        oldhunter3[1] = hunter3[1];
-                        move = rand.Next(0, 2);
-                        if (move == 0)
-                        {
-                            if (hunter3[0] > player[0])
-                            {
-                                hunter3[0] = hunter3[0] - 2 - level * 2;
-                            }
-                            else if (hunter3[0] < player[0] - level * 2)
-                            {
-                                hunter3[0] = hunter3[0] + 2 + level * 2;
-                            }
-                            else
-                            {
-                                move = 1;
-                            }
-                        }
-                        if (move == 1)
-                        {
-                            if (hunter3[1] > player[1])
-                            {
-                                hunter3[1] = hunter3[1] - 1 - level;
-                            }
-                            else if (hunter3[1] < player[1] - level)
-                            {
-                                hunter3[1] = hunter3[1] + 1 + level;
-                            }
-                            else
-                            {
-                                if (hunter3[0] > player[0])
-                                {
-                                    hunter3[0] = hunter3[0] - 2 - level * 2;
-                                }
-                                else if (hunter3[0] < player[0] - level * 2)
-                                {
-                                    hunter3[0] = hunter3[0] + 2 + level * 2;
-                                }
-                            }
-                        }
+                        MoveSeperateHunter(hunter3, level, player, oldhunter3);
                     }
 
                 }
@@ -292,88 +213,56 @@ namespace ConsoleGames.Games
                 {
                     if (player[0] <= 58 + special)
                     {
-                        oldhunter2[0] = hunter2[0];
-                        oldhunter2[1] = hunter2[1];
-                        move = rand.Next(0, 2);
-                        if (move == 0)
-                        {
-                            if (hunter2[0] > player[0])
-                            {
-                                hunter2[0] = hunter2[0] - 2 - level * 2;
-                            }
-                            else if (hunter2[0] < player[0] - level * 2)
-                            {
-                                hunter2[0] = hunter2[0] + 2 + level * 2;
-                            }
-                            else
-                            {
-                                move = 1;
-                            }
-                        }
-                        if (move == 1)
-                        {
-                            if (hunter2[1] > player[1])
-                            {
-                                hunter2[1] = hunter2[1] - 1 - level;
-                            }
-                            else if (hunter2[1] < player[1] - level)
-                            {
-                                hunter2[1] = hunter2[1] + 1 + level;
-                            }
-                            else
-                            {
-                                if (hunter2[0] > player[0])
-                                {
-                                    hunter2[0] = hunter2[0] - 2 - level * 2;
-                                }
-                                else if (hunter2[0] < player[0] - level * 2)
-                                {
-                                    hunter2[0] = hunter2[0] + 2 + level * 2;
-                                }
-                            }
-                        }
+                        MoveSeperateHunter(hunter2, level, player, oldhunter2);
                     }
                     if (player[0] >= 62 + special)
                     {
-                        oldhunter4[0] = hunter4[0];
-                        oldhunter4[1] = hunter4[1];
-                        move = rand.Next(0, 2);
-                        if (move == 0)
+                        MoveSeperateHunter(hunter4, level, player, oldhunter4);
+                    }
+                }
+            }
+            static void MoveSeperateHunter(int[] hunterX, int level, int[] player, int[] oldhunterX)
+            {
+                Random rand = new Random();
+                int move = 0;
+
+                oldhunterX[0] = hunterX[0];
+                oldhunterX[1] = hunterX[1];
+                move = rand.Next(0, 2);
+                if (move == 0)
+                {
+                    if (hunterX[0] > player[0])
+                    {
+                        hunterX[0] = hunterX[0] - 2 - level * 2;
+                    }
+                    else if (hunterX[0] < player[0] - level * 2)
+                    {
+                        hunterX[0] = hunterX[0] + 2 + level * 2;
+                    }
+                    else
+                    {
+                        move = 1;
+                    }
+                }
+                if (move == 1)
+                {
+                    if (hunterX[1] > player[1])
+                    {
+                        hunterX[1] = hunterX[1] - 1 - level;
+                    }
+                    else if (hunterX[1] < player[1] - level)
+                    {
+                        hunterX[1] = hunterX[1] + 1 + level;
+                    }
+                    else
+                    {
+                        if (hunterX[0] > player[0])
                         {
-                            if (hunter4[0] > player[0])
-                            {
-                                hunter4[0] = hunter4[0] - 2 - level * 2;
-                            }
-                            else if (hunter4[0] < player[0] - level * 2)
-                            {
-                                hunter4[0] = hunter4[0] + 2 + level * 2;
-                            }
-                            else
-                            {
-                                move = 1;
-                            }
+                            hunterX[0] = hunterX[0] - 2 - level * 2;
                         }
-                        if (move == 1)
+                        else if (hunterX[0] < player[0] - level * 2)
                         {
-                            if (hunter4[1] > player[1])
-                            {
-                                hunter4[1] = hunter4[1] - 1 - level;
-                            }
-                            else if (hunter4[1] < player[1] - level)
-                            {
-                                hunter4[1] = hunter4[1] + 1 + level;
-                            }
-                            else
-                            {
-                                if (hunter4[0] > player[0])
-                                {
-                                    hunter4[0] = hunter4[0] - 2 - level * 2;
-                                }
-                                else if (hunter4[0] < player[0] - level * 2)
-                                {
-                                    hunter4[0] = hunter4[0] + 2 + level * 2;
-                                }
-                            }
+                            hunterX[0] = hunterX[0] + 2 + level * 2;
                         }
                     }
                 }
@@ -381,6 +270,11 @@ namespace ConsoleGames.Games
         }
         private void MovePrey(int[] prey, int[] oldprey, Stopwatch stopwatch, int level)
         {
+            int special = 0;
+            if (level == 0)
+            {
+                special = 1;
+            }
             long lastMovement = stopwatch.ElapsedMilliseconds;
             oldprey[0] = prey[0];
             oldprey[1] = prey[1];
@@ -401,12 +295,12 @@ namespace ConsoleGames.Games
                 if (p == 3)
                 {
                     prey[1] = rand.Next(2, 13);
-                    prey[0] = rand.Next(62, 114);
+                    prey[0] = rand.Next(62 + special, 114);
                 }
                 if (p == 0)
                 {
                     prey[1] = rand.Next(15, 27);
-                    prey[0] = rand.Next(62, 114);
+                    prey[0] = rand.Next(62 + special, 114);
                 }
                 stopwatch.Restart();
             }
